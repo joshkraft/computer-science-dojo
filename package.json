@@ -9,6 +9,7 @@
   "keywords": [],
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
