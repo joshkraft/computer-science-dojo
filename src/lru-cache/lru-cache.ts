@@ -39,7 +39,7 @@ export class LRUCache {
     const isOverCapacity = this.data.size > this.capacity;
 
     if (isOverCapacity) {
-      const lruNode: DoublyLinkedListNode | null = this.head.next;
+      const lruNode: DoublyLinkedListNode | undefined = this.head.next;
 
       if (lruNode) {
         this.removeNode(lruNode);
@@ -49,10 +49,10 @@ export class LRUCache {
   }
 
   removeNode(node: DoublyLinkedListNode): void {
-    const prev = node!.prev;
-    const nxt = node!.next;
+    const prevNode = node!.prev;
+    const nextNode = node!.next;
 
-    [prev!.next, nxt!.prev] = [nxt, prev];
+    [prevNode!.next, nextNode!.prev] = [nextNode, prevNode];
   }
 
   insertMRUNode(node: DoublyLinkedListNode): void {
@@ -70,13 +70,18 @@ export class LRUCache {
 export class DoublyLinkedListNode {
   key: number;
   val: number;
-  next: DoublyLinkedListNode | null;
-  prev: DoublyLinkedListNode | null;
+  next: DoublyLinkedListNode | undefined;
+  prev: DoublyLinkedListNode | undefined;
 
-  constructor(key: number, val: number) {
+  constructor(
+    key: number,
+    val: number,
+    next?: DoublyLinkedListNode,
+    prev?: DoublyLinkedListNode
+  ) {
     this.key = key;
     this.val = val;
-    this.next = null;
-    this.prev = null;
+    this.next = next;
+    this.prev = prev;
   }
 }
