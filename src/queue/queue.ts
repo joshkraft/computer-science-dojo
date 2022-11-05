@@ -16,20 +16,19 @@ export class Queue {
   }
 
   dequeue(): number | null {
-    if (this.size === 0) {
+    if (this.getSize() === 0) {
       return null;
     }
 
     const toRemove: QueueNode = this.head!.next!;
-
-    this.head.next = this.head!.next!.next;
+    this.head.next = toRemove!.next;
     this.size--;
 
     return toRemove.val;
   }
 
   peek(): number | null {
-    if (this.size === 0) {
+    if (this.getSize() === 0) {
       return null;
     }
 

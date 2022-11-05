@@ -1,7 +1,12 @@
 import {readFileSync, writeFileSync} from 'fs';
 import ts = require('typescript');
 
-const filePath = process.argv[2];
+if (process.argv.indexOf('filepath') === -1) {
+  console.error('Please provide a file path to practice');
+  process.exit(1);
+}
+
+const filePath = process.argv[process.argv.indexOf('filepath') + 1];
 
 let className = filePath
   .split('/')
