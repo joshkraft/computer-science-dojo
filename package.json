@@ -14,7 +14,7 @@
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
-    "practice": "npx ts-node src/utils/delete-method-bodies.ts"
+    "practice": "npx ts-node src/utilities/delete-method-bodies.ts"
   },
   "devDependencies": {
     "@types/jest": "^28.1.7",
