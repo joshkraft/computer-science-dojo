@@ -1,50 +1,68 @@
-import {Database} from './replicated-database';
+import {SingleLeaderDatabase} from './replicated-database';
+import {sleep} from '../utilities/time-utilities';
 
-describe('Replicated Database', () => {
-  test('should be able to create a database with replicas', () => {
-    const replicas = 5;
+describe('Single Leader Database', () => {
+  test('should be able to write to and read from database', async () => {
+    const db = new SingleLeaderDatabase(5);
 
-    const db = new Database({numReplicas: replicas});
+    await db.write(1, 'foo');
+    while (!db.nodesAreConsistent()) {
+      await sleep(1);
+    }
 
-    expect(db.replicas.length).toEqual(replicas);
+    const result = await db.read(1);
+    expect(result).toBeDefined();
+    expect(result!.value).toEqual('foo');
   });
 
-  test('increasing number of replicas increases the time to reach consensus', async () => {
-    const timeWithOneReplica = await new Database({
-      numReplicas: 1,
-    }).write('foo', 1);
+  test('should send write requests to leader', async () => {
+    const db = new SingleLeaderDatabase();
 
-    const timeWithManyReplicas = await new Database({numReplicas: 300}).write(
-      'foo',
-      1
-    );
+    expect(db.leader.getNumberOfEntries()).toEqual(0);
 
-    expect(timeWithManyReplicas).toBeGreaterThan(timeWithOneReplica);
+    await db.write(1, 'foo');
+
+    expect(db.leader.getNumberOfEntries()).toEqual(1);
   });
 
-  test('increasing avgNetworkDelay increases the time to reach consensus', async () => {
-    const timeWithoutDelay = await new Database({
-      avgNetworkDelay: 0,
-    }).write('foo', 1);
+  test('should be able to handle read requests when leader is down', async () => {
+    const db = new SingleLeaderDatabase();
 
-    const timeWithDelay = await new Database({avgNetworkDelay: 1}).write(
-      'foo',
-      1
-    );
+    await db.write(1, 'foo');
+    while (!db.nodesAreConsistent()) {
+      await sleep(1);
+    }
+    // @ts-ignore
+    db.leader = null;
 
-    expect(timeWithDelay).toBeGreaterThan(timeWithoutDelay);
+    const result = await db.read(1);
+    expect(result!.value).toEqual('foo');
   });
 
-  test('increasing avgPacketLoss increases the time to reach consensus', async () => {
-    const timeWithoutPacketLoss = await new Database({
-      avgNetworkDelay: 0.1,
-    }).write('foo', 1);
+  test('should be able to handle read requests faster by adding followers', async () => {
+    const fewFollowersDB = new SingleLeaderDatabase(2);
+    const manyFollowersDB = new SingleLeaderDatabase(20);
 
-    const timeWithPacketLoss = await new Database({
-      avgNetworkDelay: 0.1,
-      avgPacketLoss: 0.7,
-    }).write('foo', 1);
+    await fewFollowersDB.write(1, 'foo');
+    while (!fewFollowersDB.nodesAreConsistent()) {
+      await sleep(1);
+    }
 
-    expect(timeWithPacketLoss).toBeGreaterThan(timeWithoutPacketLoss);
+    await manyFollowersDB.write(1, 'foo');
+    while (!manyFollowersDB.nodesAreConsistent()) {
+      await sleep(1);
+    }
+
+    let start = process.hrtime.bigint();
+    await fewFollowersDB.read(1);
+    let stop = process.hrtime.bigint();
+    const fewFollowersReadTime = stop - start;
+
+    start = process.hrtime.bigint();
+    await manyFollowersDB.read(1);
+    stop = process.hrtime.bigint();
+    const manyFollowersReadTime = stop - start;
+
+    expect(manyFollowersReadTime).toBeLessThan(fewFollowersReadTime);
   });
 });

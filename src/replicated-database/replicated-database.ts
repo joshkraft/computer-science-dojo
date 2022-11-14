@@ -1,108 +1,107 @@
-export class Database {
-  replicas: NetworkConnection[];
+import {NetworkConnection} from '../utilities/network-connection';
 
-  constructor(params: DatabaseParameters) {
+export abstract class Database {
+  replicas: DatabaseReplica[];
+
+  constructor(numReplicas = 2, avgNetworkDelay = 1, avgPacketLoss = 0.1) {
+    if (numReplicas < 2) {
+      throw new Error('Number of replicas must be >= 2.');
+    }
+
     this.replicas = [];
-    for (let i = 0; i < (params.numReplicas || 5); i++) {
+
+    for (let i = 0; i < numReplicas; i++) {
       this.replicas.push(
-        new NetworkConnection(
-          params.avgNetworkDelay || 0.5,
-          params.avgPacketLoss || 0.1,
-          new DatabaseReplica()
+        new DatabaseReplica(
+          new NetworkConnection(avgNetworkDelay, avgPacketLoss)
         )
       );
     }
   }
 
-  async write(key: string, value: number): Promise<number> {
-    for (const replica of this.replicas) {
-      replica.write(key, value);
-    }
-
-    let timeElapsed = 0;
-    while (!this.nodesHaveWriteConsensus(key, value)) {
-      await sleep(0.1);
-      timeElapsed += 0.1;
-    }
-
-    return timeElapsed;
-  }
-
-  nodesHaveWriteConsensus(key: string, value: number): boolean {
-    return this.replicas.every(
-      nc =>
-        nc.read(key) &&
-        nc.read(key)!.value === value &&
-        nc.getStringifiedNodeData() ===
-          this.replicas[0].getStringifiedNodeData()
-    );
-  }
+  abstract write(key: any, value: any): Promise<boolean>;
+  abstract read(key: any): Promise<DatabaseEntry | undefined>;
+  abstract nodesAreConsistent(): boolean;
 }
 
-class NetworkConnection {
-  avgNetworkDelay: number;
-  avgPacketLoss: number;
-  node: DatabaseReplica;
+export class SingleLeaderDatabase extends Database {
+  leader: DatabaseReplica;
+  followers: DatabaseReplica[];
 
-  constructor(
-    avgNetworkDelay: number,
-    avgPacketLoss: number,
-    toNode: DatabaseReplica
-  ) {
-    this.avgNetworkDelay = avgNetworkDelay;
-    this.avgPacketLoss = avgPacketLoss;
-    this.node = toNode;
+  constructor(numReplicas = 2, avgNetworkDelay = 1, avgPacketLoss = 0.1) {
+    super(numReplicas, avgNetworkDelay, avgPacketLoss);
+    this.leader = this.replicas.slice(0, 1)[0];
+    this.followers = this.replicas.slice(1);
   }
 
-  async write(key: string, value: number): Promise<boolean> {
-    let isLostPacket = Math.random() < this.avgPacketLoss;
-    while (isLostPacket) {
-      await sleep(Math.random() * this.avgNetworkDelay);
-      isLostPacket = Math.random() < this.avgPacketLoss;
-    }
+  async write(key: any, value: any): Promise<boolean> {
+    await this.leader.write(key, value);
 
-    await sleep(Math.random() * this.avgNetworkDelay);
-    this.node.write(key, value);
+    this.followers.forEach(f => f.write(key, value));
+
     return true;
   }
 
-  read(key: string): DatabaseEntry | undefined {
-    return this.node.read(key);
+  async read(key: any): Promise<DatabaseEntry | undefined> {
+    return await Promise.any([...this.replicas.map(r => r.read(key))]);
   }
 
-  getStringifiedNodeData(): string {
-    return JSON.stringify(Array.from(this.node.data.entries()));
+  nodesAreConsistent(): boolean {
+    const expected: string = this.leader.getStringifiedNodeData();
+
+    return this.followers.every(f => f.getStringifiedNodeData() === expected);
   }
 }
 
 class DatabaseReplica {
-  data: Map<string, DatabaseEntry>;
-  constructor() {
+  data: Map<any, DatabaseEntry>;
+  connection: NetworkConnection;
+
+  constructor(connection: NetworkConnection) {
     this.data = new Map();
+    this.connection = connection;
   }
 
-  read(key: string): DatabaseEntry | undefined {
+  async read(key: any): Promise<DatabaseEntry | undefined> {
+    await this.connection.delay();
+
     return this.data.get(key);
   }
 
-  write(key: string, value: number): void {
-    this.data.set(key, new DatabaseEntry(value));
+  async write(key: any, value: any): Promise<boolean> {
+    await this.connection.delay();
+
+    const existingEntry = this.data.get(key);
+
+    if (!existingEntry) {
+      this.data.set(key, new DatabaseEntry(value));
+    } else {
+      existingEntry.update(value);
+    }
+
+    return true;
+  }
+
+  getStringifiedNodeData(): string {
+    return JSON.stringify(Array.from(this.data.entries()));
+  }
+
+  getNumberOfEntries(): number {
+    return this.data.size;
   }
 }
 
 class DatabaseEntry {
   value: number;
+  version: number;
+
   constructor(value: number) {
     this.value = value;
+    this.version = 0;
   }
-}
 
-async function sleep(s: number) {
-  return new Promise(resolve => setTimeout(resolve, s * 1000));
-}
-
-interface DatabaseParameters {
-  numReplicas?: number;
-  avgNetworkDelay?: number;
-  avgPacketLoss?: number;
+  update(val: number) {
+    this.value = val;
+    this.version++;
+  }
 }
