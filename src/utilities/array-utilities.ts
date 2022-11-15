@@ -1,7 +1,7 @@
 export function generateRandomArray(
-  length: number = 10,
-  min: number = -10,
-  max: number = 10
+  length = 10,
+  min = -10,
+  max = 10
 ): number[] {
   const arr = [];
 
