@@ -4,6 +4,10 @@
   "description": "a repository for practicing CS things",
   "license": "Apache-2.0",
   "keywords": [],
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
@@ -23,6 +27,6 @@
     "jest": "^28.1.3",
     "prettier": "2.7.1",
     "ts-jest": "^28.0.8",
-    "typescript": "^4.7.4"
+    "typescript": "~4.7.0"
   }
 }
