@@ -22,7 +22,7 @@ export class LeaderlessDatabase extends Database {
     }
 
     if (w + r <= numReplicas) {
-      throw new Error('w + r must be > numReplicas to achieve strict quorom');
+      throw new Error('w + r must be > numReplicas to achieve strict quorum');
     }
 
     super(numReplicas, avgNetworkDelay, avgPacketLoss);
@@ -30,37 +30,47 @@ export class LeaderlessDatabase extends Database {
     this.w = w;
   }
 
+  /**
+   * Writes a key value pair by writing to all nodes asynchronously, and then
+   * waiting for confirmation from w nodes before considering the write a success.
+   */
   async write(key: any, value: any): Promise<boolean> {
-    const responses: boolean[] = [];
+    let successfulWrites = 0;
 
     for (const replica of this.replicas) {
-      replica.write(key, value).then(val => responses.push(val));
+      replica.write(key, value).then(() => successfulWrites++);
     }
 
-    while (responses.length < this.w) {
+    while (successfulWrites < this.w) {
       await sleep(0.01);
     }
 
     return true;
   }
 
+  /**
+   * Reads the value for the provided key by sending the request to all nodes
+   * asynchronously, and then waiting until responses are received from r nodes.
+   * Then, the value with the highest 'version' is returned, as this represents
+   * the most up to date data.
+   */
   async read(key: any): Promise<DatabaseEntry | undefined> {
     const responses: DatabaseEntry[] = [];
 
     for (const replica of this.replicas) {
-      replica.read(key).then(val => responses.push(val as DatabaseEntry));
+      replica.read(key).then(response => {
+        if (response !== undefined) {
+          responses.push(response);
+        }
+      });
     }
 
     while (responses.length < this.r) {
       await sleep(0.01);
     }
 
-    const latestVersion = Math.max(
-      ...responses.filter(r => r !== undefined).map(r => r.version)
-    );
+    const highestVersion = Math.max(...responses.map(r => r.version));
 
-    return responses.find(
-      response => response !== undefined && response.version === latestVersion
-    );
+    return responses.find(response => response.version === highestVersion);
   }
 }

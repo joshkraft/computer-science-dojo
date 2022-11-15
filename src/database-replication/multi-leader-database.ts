@@ -13,14 +13,25 @@ export class MultiLeaderDatabase extends Database {
     this.followers = this.replicas.slice(numLeaders);
   }
 
+  /**
+   * Writes a key value pair by writing to all leader nodes, but only waits for
+   * confirmation from at least one leader node before considering the write a
+   * success. All followers receive the write asynchronously.
+   */
   async write(key: any, value: any): Promise<boolean> {
     await Promise.any([...this.leaders.map(l => l.write(key, value))]);
 
-    this.followers.forEach(f => f.write(key, value));
+    for (const follower of this.followers) {
+      follower.write(key, value);
+    }
 
     return true;
   }
 
+  /**
+   * Reads the value for the provided key by sending the request to all nodes
+   * (leaders and followers) and returning the first value returned by any node.
+   */
   async read(key: any): Promise<DatabaseEntry | undefined> {
     return await Promise.any([...this.replicas.map(r => r.read(key))]);
   }

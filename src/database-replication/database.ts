@@ -11,7 +11,7 @@ export abstract class Database {
     avgPacketLoss: number
   ) {
     if (numReplicas < 2) {
-      throw new Error('Number of replicas must be >= 2.');
+      throw new Error('numReplicas must be >= 2.');
     }
 
     this.replicas = [];
