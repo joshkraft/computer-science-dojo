@@ -1,5 +1,5 @@
 import {readFileSync, writeFileSync} from 'fs';
-import ts = require('typescript');
+import typescript from 'typescript';
 
 if (process.argv.indexOf('filepath') === -1) {
   console.error('Please provide a file path to practice');
@@ -15,18 +15,18 @@ className = className.charAt(0).toUpperCase() + className.slice(1);
 
 const rawFile = readFileSync(filePath, 'utf-8');
 
-const sourceFile: ts.SourceFile = ts.createSourceFile(
+const sourceFile: typescript.SourceFile = typescript.createSourceFile(
   filePath,
   rawFile,
-  ts.ScriptTarget.Latest
+  typescript.ScriptTarget.Latest
 );
 
 const linesToDrop = new Set();
 
-ts.forEachChild(sourceFile, node => {
-  if (ts.isClassDeclaration(node) && node.name?.text === className) {
+typescript.forEachChild(sourceFile, node => {
+  if (typescript.isClassDeclaration(node) && node.name?.text === className) {
     const methods = node.members.filter(member =>
-      ts.isMethodDeclaration(member)
+      typescript.isMethodDeclaration(member)
     );
 
     for (const method of methods) {
