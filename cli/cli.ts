@@ -1,27 +1,17 @@
 #!/usr/bin/env node
-/**
- * TODO:
- * [ ] clean everything up
- * [ ] actually clear out the file (or not?)
- * [ ] open the file in vscode
- * [ ] start a test session?
- * [ ] consider adding functionality to group by category?
- * [ ] add logic to filter out utilities, such as requiring test files?
- * [ ] implement DIY fuzzy finding? or DIY cli altogether?
- */
-import chalk from 'chalk';
-import inquirer from 'inquirer';
 import chalkAnimation from 'chalk-animation';
-import {FileExplorer} from './file-explorer';
-import {Concept} from './concept';
+import chalk from 'chalk';
 
-async function main() {
+import {findTestedFiles} from './file';
+import {Concept, Mode} from './types';
+import {promptConceptSelection, promptDifficultySelection} from './prompt';
+
+async function cli() {
   await intro();
 
   const concepts: Concept[] = fetchConcepts();
 
   const selectedConcept: Concept = await promptConceptSelection(concepts);
-
   const selectedDifficulty: Mode = await promptDifficultySelection();
 
   console.log(
@@ -32,6 +22,8 @@ async function main() {
 }
 
 async function intro() {
+  console.clear();
+
   const intro = chalkAnimation.neon('\nWELCOME TO CS DOJO!!!\n', 2);
 
   await new Promise(r => setTimeout(r, 2000));
@@ -39,65 +31,27 @@ async function intro() {
   intro.stop();
 }
 
-async function promptConceptSelection(concepts: Concept[]): Promise<Concept> {
-  const selection = await inquirer.prompt({
-    name: 'problem',
-    type: 'list',
-    message: 'What concept would you like to practice today?\n',
-    choices: [RANDOM_MODE, ...concepts.map((concept: Concept) => concept.name)],
-  });
-
-  if (selection.problem === RANDOM_MODE) {
-    return concepts[Math.floor(Math.random() * concepts.length)];
-  }
-
-  const match: Concept | undefined = concepts.find(
-    (c: Concept) => c.name === selection.problem
-  );
-
-  if (!match) {
-    throw new Error('Unable to find selected concept');
-  }
-
-  return match;
-}
-
-async function promptDifficultySelection(): Promise<Mode> {
-  const selection = await inquirer.prompt({
-    name: 'mode',
-    type: 'list',
-    message: 'What difficulty would you like?\n',
-    choices: [
-      {
-        name: 'Easy (Delete method bodies)',
-        value: 'Easy',
-      },
-      {
-        name: 'Hard (Delete method bodies and JSDocs)',
-        value: 'Hard',
-      },
-    ],
-  });
-
-  return selection.mode;
-}
-
 function fetchConcepts(): Concept[] {
-  const files: string[] = FileExplorer.findMatchingFiles(
-    './src',
-    ['.ts'],
-    ['.test.']
-  );
+  const files: string[] = findTestedFiles('./src', ['.ts']);
 
-  return files.map(file => new Concept(file));
+  const concepts: Concept[] = [];
+  for (const file of files) {
+    concepts.push(createConcept(file));
+  }
+
+  return concepts;
 }
 
-const RANDOM_MODE: string = 'Random Concept';
+function createConcept(file: string): Concept {
+  const path = file;
+  const name = file
+    .slice(file.lastIndexOf('/') + 1)
+    .split('.')[0]
+    .split('-')
+    .map(word => word[0].toUpperCase() + word.slice(1))
+    .join(' ');
 
-type Mode = {
-  EASY: 'easy';
-  HARD: 'hard';
-};
+  return {path, name};
+}
 
-console.clear();
-main();
+cli();
