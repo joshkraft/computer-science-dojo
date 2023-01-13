@@ -2,29 +2,59 @@
 import chalkAnimation from 'chalk-animation';
 import chalk from 'chalk';
 
-import {findTestedFiles} from './file';
-import {Concept, Mode} from './types';
+import {findTestedFiles} from './filesystem-utils';
 import {promptConceptSelection, promptDifficultySelection} from './prompt';
+import {writeFileSync} from 'fs';
+import {generateSource, process} from './typescript-utils';
 
-async function cli() {
+export type Mode = {
+  EASY: 'easy';
+  HARD: 'hard';
+};
+
+export type Concept = {
+  path: string;
+  name: string;
+};
+
+async function run() {
   await intro();
 
-  const concepts: Concept[] = fetchConcepts();
+  const allConcepts: Concept[] = fetchConcepts();
 
-  const selectedConcept: Concept = await promptConceptSelection(concepts);
-  const selectedDifficulty: Mode = await promptDifficultySelection();
+  const concept: Concept = await promptConceptSelection(allConcepts);
+  const difficulty: Mode = await promptDifficultySelection();
 
   console.log(
-    `We will be practicing ${chalk.bold(selectedConcept!.name)} in ${chalk.bold(
-      selectedDifficulty
+    `We will be practicing ${chalk.bold(concept!.name)} in ${chalk.bold(
+      difficulty
     )} mode today!`
   );
+
+  const source = generateSource(concept.path);
+
+  const processed = process(source, true, true, true); // TODO: make this dynamic
+
+  writeFileSync(concept.path, processed);
 }
 
 async function intro() {
   console.clear();
 
-  const intro = chalkAnimation.neon('\nWELCOME TO CS DOJO!!!\n', 2);
+  const greeting: string = `
+  __        __   _                            _        
+  \\ \\      / /__| | ___ ___  _ __ ___   ___  | |_ ___  
+   \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ \` _ \\ / _ \\ | __/ _ \\ 
+    \\ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) |
+     \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/ 
+    ____ ____    ____   ___      _  ___                
+   / ___/ ___|  |  _ \\ / _ \\    | |/ _ \\               
+  | |   \\___ \\  | | | | | | |_  | | | | |              
+  | |___ ___) | | |_| | |_| | |_| | |_| |              
+   \\____|____/  |____/ \\___/ \\___/ \\___/               
+ `;
+
+  const intro: chalkAnimation.Animation = chalkAnimation.neon(greeting, 1.5);
 
   await new Promise(r => setTimeout(r, 2000));
 
@@ -34,17 +64,14 @@ async function intro() {
 function fetchConcepts(): Concept[] {
   const files: string[] = findTestedFiles('./src', ['.ts']);
 
-  const concepts: Concept[] = [];
-  for (const file of files) {
-    concepts.push(createConcept(file));
-  }
+  const concepts: Concept[] = files.map((file: string) => createConcept(file));
 
   return concepts;
 }
 
 function createConcept(file: string): Concept {
-  const path = file;
-  const name = file
+  const path: string = file;
+  const name: string = file
     .slice(file.lastIndexOf('/') + 1)
     .split('.')[0]
     .split('-')
@@ -54,4 +81,4 @@ function createConcept(file: string): Concept {
   return {path, name};
 }
 
-cli();
+run();

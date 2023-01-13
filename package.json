@@ -18,7 +18,7 @@
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
-    "cli": "npx ts-node cli/cli.ts"
+    "practice": "npx ts-node cli/cli.ts"
   },
   "devDependencies": {
     "@types/chalk-animation": "^1.6.1",

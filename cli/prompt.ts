@@ -1,27 +1,36 @@
-import inquirer from 'inquirer';
-import {Concept, Mode} from './types';
+import inquirer, {ChoiceOptions} from 'inquirer';
+import {Mode, Concept} from './cli';
 
 export async function promptConceptSelection(
   concepts: Concept[]
 ): Promise<Concept> {
   const RANDOM_MODE: string = 'Random Concept';
+  const choices: ChoiceOptions[] = [];
 
-  const selection = await inquirer.prompt({
-    name: 'problem',
-    type: 'list',
-    message: 'What concept would you like to practice today?\n',
-    choices: [RANDOM_MODE, ...concepts.map((concept: Concept) => concept.name)],
+  choices.push({
+    name: RANDOM_MODE,
+    value: RANDOM_MODE,
   });
 
-  if (selection.problem === RANDOM_MODE) {
+  for (const concept of concepts) {
+    choices.push({
+      name: concept.name,
+      value: concept,
+    });
+  }
+
+  const result = await inquirer.prompt({
+    name: 'concept',
+    type: 'list',
+    message: 'What concept would you like to practice today?\n',
+    choices: choices,
+  });
+
+  if (result.concept === RANDOM_MODE) {
     return concepts[Math.floor(Math.random() * concepts.length)];
   }
 
-  const match: Concept | undefined = concepts.find(
-    (c: Concept) => c.name === selection.problem
-  );
-
-  return match!;
+  return result.concept;
 }
 
 export async function promptDifficultySelection(): Promise<Mode> {
