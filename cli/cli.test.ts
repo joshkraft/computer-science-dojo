@@ -1,11 +1,11 @@
 import typescript from 'typescript';
-import {process} from './typescript-utils';
+import {processFile} from './cli';
 
-describe('TypeScript Utils', () => {
+describe('CLI', () => {
   test('should be able to delete method bodies', () => {
     const input = createSourceFromString(testClass);
 
-    const result = process(input, true, false, false);
+    const result = processFile(input, true, false, false);
 
     const expected = `
 class TestClass {
@@ -27,7 +27,7 @@ class TestClass {
   test('should be able to delete function bodies', () => {
     const input = createSourceFromString(testFunction);
 
-    const result = process(input, false, true, false);
+    const result = processFile(input, false, true, false);
 
     const expected = `
 /**
@@ -45,7 +45,7 @@ function testFunction(foo: string) {
       testClass + '\n' + testFunction + '\n' + testStandaloneComment
     );
 
-    const result = process(input, true, true, true);
+    const result = processFile(input, true, true, true);
 
     const expected = `
 class TestClass {
