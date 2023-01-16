@@ -48,7 +48,7 @@ export function generateSortedRandomArray(
   return arr;
 }
 
-export function generateSparseArray(items: any[], sparcity: number = 10) {
+export function generateSparseArray(items: any[], sparcity = 10) {
   const outputLength = items.length * sparcity;
   const output: any[] = new Array(outputLength).fill(null);
 
