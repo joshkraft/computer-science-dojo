@@ -5,7 +5,7 @@ export function generateRandomArray(
   min = -10,
   max = 10
 ): number[] {
-  const arr = [];
+  const arr: number[] = [];
 
   for (let i = 0; i < length; i++) {
     arr.push(Math.floor(Math.random() * (max - min) + min));
@@ -14,8 +14,8 @@ export function generateRandomArray(
   return arr;
 }
 
-export function generateRangeArray(min = -10, max = 10): number[] {
-  const arr = [];
+export function generateSortedArray(min = -10, max = 10): number[] {
+  const arr: number[] = [];
 
   for (let i = min; i <= max; i++) {
     arr.push(i);
@@ -30,7 +30,7 @@ export function generateSortedRandomArray(
   skipProbability = 0.5,
   atLeastOneItem = true
 ): number[] {
-  const arr = [];
+  const arr: number[] = [];
 
   if (atLeastOneItem) {
     arr.push(min);
