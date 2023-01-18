@@ -8,7 +8,6 @@
         "allowModules": ["typescript"]
       }
     ],
-    "jsdoc/no-types": "error",
     "jsdoc/require-param-type": "off",
     "jsdoc/require-returns-type": "off",
     "jsdoc/check-tag-names": ["error", {"definedTags": ["space", "time"]}]

@@ -9,11 +9,11 @@
  * time until the entire array is sorted.
  *
  * @param arr The array to be sorted.
- * @returns A new array representing a sorted copy of the array.
+ * @returns {number[]} A new array representing a sorted copy of the array.
  * @space O(1)
  * @time O(n^2)
  */
-export function selectionSort(arr: number[]): number[] {
+export function selectionSort(arr: number[]) {
   const out = [...arr];
 
   for (let i = 0; i < out.length - 1; i++) {

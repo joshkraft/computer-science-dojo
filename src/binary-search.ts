@@ -16,11 +16,11 @@
  *
  * @param arr The sorted array to search within.
  * @param target The value to search for.
- * @returns Indicates whether the target value exists within the array.
+ * @returns {boolean} Indicates whether the target value exists within the array.
  * @space O(1)
  * @time O(log n)
  */
-export function binarySearch(arr: number[], target: number): boolean {
+export function binarySearch(arr: number[], target: number) {
   let l = 0;
   let r = arr.length - 1;
 
