@@ -36,7 +36,7 @@ export class Queue {
    * @space O(1)
    * @time O(1)
    */
-  enqueue(val: number) {
+  enqueue(val: number): void {
     const newNode: Node = new Node(val);
 
     if (!this.head) {
@@ -53,12 +53,11 @@ export class Queue {
   /**
    * Removes the node at the front of the queue and updates the queue's size.
    *
-   * @returns {number | null} The value at the front of the queue, or null if
-   * 						  the queue is empty.
+   * @returns The value at the front of the queue, or null if queue is empty.
    * @space O(1)
    * @time O(1)
    */
-  dequeue() {
+  dequeue(): number | null {
     if (!this.head) {
       return null;
     }
@@ -80,12 +79,11 @@ export class Queue {
   /**
    * Returns the value of the node at the front of the queue without removing it.
    *
-   * @returns {number | null} The value at the front of the queue, or null if
-   * 						  the queue is empty.
+   * @returns The value at the front of the queue, or null if queue is empty.
    * @space O(1)
    * @time O(1)
    */
-  peek() {
+  peek(): number | null {
     if (!this.head) {
       return null;
     }

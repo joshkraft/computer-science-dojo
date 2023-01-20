@@ -1,18 +1,18 @@
 import {generateRandomArray} from './utilities/array-utilities';
-import {selectionSort} from './selection-sort';
+import {quickSort} from './quick-sort';
 
-describe('Selection Sort', () => {
+describe('Quick Sort', () => {
   test('should return an array of numbers sorted in ascending order', () => {
     const input: number[] = generateRandomArray();
 
-    expect(selectionSort(input)).toEqual(input.sort((a, b) => a - b));
+    expect(quickSort(input)).toEqual(input.sort((a, b) => a - b));
   });
 
   test('should not mutate input array', () => {
     const input: number[] = generateRandomArray();
     const originalInput: number[] = [...input];
 
-    selectionSort(input);
+    quickSort(input);
 
     expect(input).toEqual(originalInput);
   });
@@ -20,12 +20,18 @@ describe('Selection Sort', () => {
   test('should handle an empty array', () => {
     const input: number[] = [];
 
-    expect(selectionSort(input)).toEqual([]);
+    expect(quickSort(input)).toEqual([]);
   });
 
   test('should handle an array with one element', () => {
     const input: number[] = [1];
 
-    expect(selectionSort(input)).toEqual([1]);
+    expect(quickSort(input)).toEqual([1]);
+  });
+
+  test('should handle duplicate elements', () => {
+    const input: number[] = [1, 2, 3, 1, 2, 3];
+
+    expect(quickSort(input)).toEqual([1, 1, 2, 2, 3, 3]);
   });
 });

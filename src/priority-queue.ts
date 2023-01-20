@@ -46,7 +46,7 @@ export class PriorityQueue {
    * @space O(1)
    * @time O(n)
    */
-  enqueue(val: number, priority: number) {
+  enqueue(val: number, priority: number): void {
     const newNode: Node = new Node(val, priority);
 
     if (!this.head) {
@@ -72,12 +72,12 @@ export class PriorityQueue {
    * Removes the value of the node with the highest priority (stored at the
    * front of the priority queue) and updates the queue's size.
    *
-   * @returns {number | null} The value of the item with the highest priority,
-   * 						  or null if the queue is empty.
+   * @returns The value of the item with the highest priority, or null if queue
+   * 		  is empty.
    * @space O(1)
    * @time O(1)
    */
-  dequeue() {
+  dequeue(): number | null {
     if (!this.head) {
       return null;
     }
@@ -93,12 +93,12 @@ export class PriorityQueue {
    * Returns the value of the node with the highest priority in the priority
    * queue without removing it.
    *
-   * @returns {number | null} The value of the item with the highest priority,
-   * 						  or null if the queue is empty.
+   * @returns The value of the item with the highest priority, or null if queue
+   * 		  is empty.
    * @space O(1)
    * @time O(1)
    */
-  peek() {
+  peek(): number | null {
     if (!this.head) {
       return null;
     }
