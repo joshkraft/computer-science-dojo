@@ -19,7 +19,7 @@ class AClass {
 	}
 }`;
 
-      expect(modifySource(source, true)).toBe(expected);
+      expect(modifySource(source, true)).toEqual(expected);
     });
 
     test('should be able to clear out functions in TypeScript file', () => {
@@ -36,7 +36,7 @@ class AClass {
 function aFunction(foo: string, bar: string) {
 }`;
 
-      expect(modifySource(source, false, true)).toBe(expected);
+      expect(modifySource(source, false, true)).toEqual(expected);
     });
 
     test('should be able to clear out comments in TypeScript file', () => {
@@ -48,7 +48,7 @@ function aFunction(foo: string, bar: string) {
 
       const expected = '\n\n';
 
-      expect(modifySource(source, false, false, true)).toBe(expected);
+      expect(modifySource(source, false, false, true)).toEqual(expected);
     });
   });
 });

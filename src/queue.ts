@@ -14,8 +14,8 @@ export class Node {
 
 /**
  * Queue is an implementation of a queue data structure that uses a singly
- * linked list to store a list of items. This allows for efficient addition and
- * removal of items in a First In First Out (FIFO) manner.
+ * linked list to store a list of items which can be efficiently added / removed
+ * in First In First Out (FIFO) order.
  */
 export class Queue {
   head: Node | null;
@@ -37,13 +37,13 @@ export class Queue {
    * @time O(1)
    */
   enqueue(val: number) {
-    const nodeToInsert: Node = new Node(val);
+    const newNode: Node = new Node(val);
 
     if (!this.head) {
-      this.head = nodeToInsert;
-      this.tail = nodeToInsert;
+      this.head = newNode;
+      this.tail = newNode;
     } else {
-      this.tail!.next = nodeToInsert;
+      this.tail!.next = newNode;
       this.tail = this.tail!.next;
     }
 
@@ -63,7 +63,7 @@ export class Queue {
       return null;
     }
 
-    const toDelete: Node = this.head;
+    const removedNode: Node = this.head;
 
     if (this.head.next) {
       this.head = this.head.next;
@@ -74,7 +74,7 @@ export class Queue {
 
     this.size--;
 
-    return toDelete.val;
+    return removedNode.val;
   }
 
   /**
