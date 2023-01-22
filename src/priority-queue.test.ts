@@ -2,7 +2,7 @@ import {Node, PriorityQueue} from './priority-queue';
 
 describe('Node', () => {
   describe('constructor()', () => {
-    test('should create a new Node that stores a value and priority', () => {
+    test('should create a new Node that has a value, priority, and next pointer', () => {
       const node: Node = new Node(0, 0);
 
       expect(node.val).toEqual(0);
@@ -20,7 +20,7 @@ describe('Priority Queue', () => {
   });
 
   describe('constructor()', () => {
-    test('should create a priority queue with head and size properties', () => {
+    test('should create a priority queue that has a head and size', () => {
       expect(pq.head).toBeNull();
       expect(pq.size).toEqual(0);
     });

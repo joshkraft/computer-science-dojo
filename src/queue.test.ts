@@ -2,7 +2,7 @@ import {Node, Queue} from './queue';
 
 describe('Node', () => {
   describe('constructor()', () => {
-    test('should create a new Node that stores a value', () => {
+    test('should create a new Node that has a value', () => {
       const node: Node = new Node(0);
 
       expect(node.val).toEqual(0);
@@ -19,7 +19,7 @@ describe('Queue', () => {
   });
 
   describe('constructor()', () => {
-    test('should create a queue with head, tail, and size properties', () => {
+    test('should create a queue that has a head, tail, and size', () => {
       expect(queue.head).toBeNull();
       expect(queue.tail).toBeNull();
       expect(queue.size).toEqual(0);

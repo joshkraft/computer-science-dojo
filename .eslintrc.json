@@ -11,7 +11,18 @@
     ],
     "jsdoc/require-param-type": "off",
     "jsdoc/require-returns-type": "off",
-    "jsdoc/check-tag-names": ["error", {"definedTags": ["space", "time"]}]
+    "jsdoc/check-tag-names": ["error", {"definedTags": ["space", "time"]}],
+    "jsdoc/require-jsdoc": [
+      "error",
+      {
+        "checkConstructors": false,
+        "require": {
+          "ClassDeclaration": true,
+          "FunctionDeclaration": true
+        },
+        "contexts": ["MethodDefinition:not([accessibility=\"private\"])"]
+      }
+    ]
   },
   "settings": {
     "jsdoc": {
