@@ -21,11 +21,7 @@
       "error",
       {
         "checkConstructors": false,
-        "require": {
-          "ClassDeclaration": true,
-          "FunctionDeclaration": true
-        },
-        "contexts": ["MethodDefinition:not([accessibility=\"private\"])"]
+        "publicOnly": true
       }
     ],
     "jest/prefer-expect-assertions": "off"
