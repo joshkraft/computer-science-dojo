@@ -5,10 +5,10 @@ describe('Node', () => {
     test('should create a new Node that has a key, value, next pointer, and prev pointer', () => {
       const node: Node = new Node('foo', 'Foo');
 
-      expect(node.key).toEqual('foo');
-      expect(node.val).toEqual('Foo');
-      expect(node.next).toEqual(null);
-      expect(node.prev).toEqual(null);
+      expect(node.key).toBe('foo');
+      expect(node.val).toBe('Foo');
+      expect(node.next).toBeNull();
+      expect(node.prev).toBeNull();
     });
   });
 });
@@ -22,7 +22,7 @@ describe('LRU Cache', () => {
 
   describe('constructor()', () => {
     test('should create a LRUCache that has a size, cache, head pointer, and tail pointer', () => {
-      expect(cache.size).toEqual(5);
+      expect(cache.size).toBe(5);
       expect(cache.cache).toEqual(new Map<string, Node>());
       expect(cache.head).toBeDefined();
       expect(cache.tail).toBeDefined();
@@ -35,17 +35,17 @@ describe('LRU Cache', () => {
       cache.put('b', 'B');
       cache.put('c', 'C');
 
-      expect(cache.cache.get('a')!.val).toEqual('A');
-      expect(cache.cache.get('b')!.val).toEqual('B');
-      expect(cache.cache.get('c')!.val).toEqual('C');
+      expect(cache.cache.get('a')!.val).toBe('A');
+      expect(cache.cache.get('b')!.val).toBe('B');
+      expect(cache.cache.get('c')!.val).toBe('C');
     });
 
     test('should update items value if it already exists in cache', () => {
       cache.put('a', 'A');
-      expect(cache.cache.get('a')!.val).toEqual('A');
+      expect(cache.cache.get('a')!.val).toBe('A');
 
       cache.put('a', 'B');
-      expect(cache.cache.get('a')!.val).toEqual('B');
+      expect(cache.cache.get('a')!.val).toBe('B');
     });
 
     test('should evict least recently used item from cache when size limit is reached', () => {
@@ -75,7 +75,7 @@ describe('LRU Cache', () => {
     });
 
     test('should return null if item is not present in cache', () => {
-      expect(cache.get('a')).toBe(null);
+      expect(cache.get('a')).toBeNull();
     });
 
     test('should move item to front of queue when it is accessed', () => {
