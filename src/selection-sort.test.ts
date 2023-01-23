@@ -1,4 +1,4 @@
-import {generateRandomArray} from './utilities/array-utilities';
+import {generateRandomArray} from './utils/array-utils';
 import {selectionSort} from './selection-sort';
 
 describe('Selection Sort', () => {

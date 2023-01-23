@@ -1,4 +1,4 @@
-import {generateSortedArray} from './utilities/array-utilities';
+import {generateSortedArray} from './utils/array-utils';
 import {binarySearch} from './binary-search';
 
 describe('Binary Search', () => {

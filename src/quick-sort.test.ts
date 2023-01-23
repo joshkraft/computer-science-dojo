@@ -1,4 +1,4 @@
-import {generateRandomArray} from './utilities/array-utilities';
+import {generateRandomArray} from './utils/array-utils';
 import {quickSort} from './quick-sort';
 
 describe('Quick Sort', () => {
