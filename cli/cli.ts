@@ -11,8 +11,8 @@ import {findTestedFiles, createConcept} from './file';
 import {selectConcept, selectDifficulty} from './prompt';
 
 export enum Mode {
-  EASY,
-  HARD,
+  EASY = 'easy',
+  HARD = 'hard',
 }
 
 export type Concept = {
@@ -72,7 +72,7 @@ function prepareConcept(
   selectedDifficulty: Mode
 ): void {
   const source: ts.SourceFile = getSourceFile(selectedConcept.path);
-  const clearDocumentation: boolean = selectedDifficulty === Mode.HARD;
+  const clearDocumentation = selectedDifficulty.toLowerCase() === Mode.HARD;
 
   const modifiedFile: string = modifySource(
     source,
