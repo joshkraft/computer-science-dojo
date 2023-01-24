@@ -18,7 +18,7 @@
  *
  * @param unsortedArr The array to be sorted.
  * @returns {number[]} A new array representing a sorted copy of the array.
- * @space O(n log n)
+ * @space O(n)
  * @time O(n log n)
  */
 export function quickSort(unsortedArr: number[]): number[] {
