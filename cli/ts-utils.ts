@@ -12,29 +12,29 @@ export function modifySource(
   clearFunctions = false,
   clearDocumentation = false
 ): string {
-  const linesToDrop: Set<number> = new Set<number>();
+  const linesToRemove: Set<number> = new Set<number>();
 
   ts.forEachChild(source, node => {
     if (clearMethods && ts.isClassDeclaration(node)) {
       for (const line of findMethodLines(source, node)) {
-        linesToDrop.add(line);
+        linesToRemove.add(line);
       }
     }
 
     if (clearFunctions && ts.isFunctionDeclaration(node)) {
       for (const line of findFunctionLines(source, node)) {
-        linesToDrop.add(line);
+        linesToRemove.add(line);
       }
     }
   });
 
   if (clearDocumentation) {
     for (const line of findCommentLines(source)) {
-      linesToDrop.add(line);
+      linesToRemove.add(line);
     }
   }
 
-  return dropLines(source, linesToDrop);
+  return removeLines(source, linesToRemove);
 }
 
 function findMethodLines(
@@ -91,10 +91,14 @@ function findCommentLines(source: ts.SourceFile): number[] {
   return commentLines;
 }
 
-function dropLines(source: ts.SourceFile, linesToDrop: Set<number>): string {
-  return source.text
+function removeLines(
+  source: ts.SourceFile,
+  linesToRemove: Set<number>
+): string {
+  return source
+    .getFullText()
     .split('\n')
-    .filter((element, index) => !linesToDrop.has(index))
+    .filter((element, index) => !linesToRemove.has(index))
     .join('\n');
 }
 
