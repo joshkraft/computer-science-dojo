@@ -12,32 +12,32 @@ export function modifySource(
   clearFunctions = false,
   clearDocumentation = false
 ): string {
-  const linesToDrop: Set<number> = new Set<number>();
+  const linesToRemove: Set<number> = new Set<number>();
 
   ts.forEachChild(source, node => {
     if (clearMethods && ts.isClassDeclaration(node)) {
-      for (const line of findLinesInMethod(source, node)) {
-        linesToDrop.add(line);
+      for (const line of findMethodLines(source, node)) {
+        linesToRemove.add(line);
       }
     }
 
     if (clearFunctions && ts.isFunctionDeclaration(node)) {
       for (const line of findFunctionLines(source, node)) {
-        linesToDrop.add(line);
-      }
-    }
-
-    if (clearDocumentation) {
-      for (const line of findCommentLines(source, node)) {
-        linesToDrop.add(line);
+        linesToRemove.add(line);
       }
     }
   });
 
-  return dropLines(source, linesToDrop);
+  if (clearDocumentation) {
+    for (const line of findCommentLines(source)) {
+      linesToRemove.add(line);
+    }
+  }
+
+  return removeLines(source, linesToRemove);
 }
 
-function findLinesInMethod(
+function findMethodLines(
   source: ts.SourceFile,
   node: ts.ClassDeclaration
 ): number[] {
@@ -74,36 +74,31 @@ function findFunctionLines(
   return getRange(start + 1, stop);
 }
 
-function findCommentLines(source: ts.SourceFile, node: ts.Node): number[] {
-  const lines: number[] = [];
-  const ranges = findCommentRanges(source, node) || [];
+function findCommentLines(source: ts.SourceFile): number[] {
+  const commentLines: number[] = [];
 
-  for (const range of ranges) {
-    const start: number = source.getLineAndCharacterOfPosition(range.pos).line;
-    const stop: number = source.getLineAndCharacterOfPosition(range.end).line;
+  const lines = source.getFullText().split('\n');
 
-    lines.push(...getRange(start, stop + 1));
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trimStart();
+    const isComment = trimmed.startsWith('/') || trimmed.startsWith('*');
+
+    if (isComment) {
+      commentLines.push(i);
+    }
   }
 
-  return lines;
+  return commentLines;
 }
 
-function findCommentRanges(
+function removeLines(
   source: ts.SourceFile,
-  node: ts.Node
-): ts.CommentRange[] {
-  const commentRanges = ts.getLeadingCommentRanges(
-    source.getFullText(),
-    node.getFullStart()
-  );
-
-  return commentRanges || [];
-}
-
-function dropLines(source: ts.SourceFile, linesToDrop: Set<number>): string {
-  return source.text
+  linesToRemove: Set<number>
+): string {
+  return source
+    .getFullText()
     .split('\n')
-    .filter((element, index) => !linesToDrop.has(index))
+    .filter((element, index) => !linesToRemove.has(index))
     .join('\n');
 }
 

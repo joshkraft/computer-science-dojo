@@ -3,4 +3,5 @@ module.exports = {
   testEnvironment: 'node',
   testMatch: ['**/?(*.)+(spec|test).ts'],
   testTimeout: 50000,
+  collectCoverage: false,
 };

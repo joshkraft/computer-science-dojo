@@ -1,12 +1,34 @@
 {
-  "extends": "./node_modules/gts/",
+  "extends": [
+    "./node_modules/gts/",
+    "plugin:jsdoc/recommended",
+    "plugin:jest/recommended",
+    "plugin:jest/style"
+  ],
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/explicit-function-return-type": "error",
     "node/no-unpublished-import": [
       "error",
       {
         "allowModules": ["typescript"]
       }
-    ]
+    ],
+    "jsdoc/require-param-type": "off",
+    "jsdoc/require-returns-type": "off",
+    "jsdoc/check-tag-names": ["error", {"definedTags": ["space", "time"]}],
+    "jsdoc/require-jsdoc": [
+      "error",
+      {
+        "checkConstructors": false,
+        "publicOnly": true
+      }
+    ],
+    "jest/prefer-expect-assertions": "off"
+  },
+  "settings": {
+    "jsdoc": {
+      "mode": "typescript"
+    }
   }
 }
