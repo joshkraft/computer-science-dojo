@@ -21,13 +21,13 @@ export function generateRandomArray(
 }
 
 /**
- * Generates a sorted array of integers.
+ * Generates a sorted array of integers covering a range.
  *
  * @param from The first integer in the sorted array.
  * @param to The last integer in the sorted array.
  * @returns An array of sorted integers.
  */
-export function generateSortedArray(from = -10, to = 10): number[] {
+export function generateRange(from = -10, to = 10): number[] {
   const arr: number[] = [];
 
   for (let i = from; i <= to; i++) {

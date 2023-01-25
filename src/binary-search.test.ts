@@ -1,8 +1,8 @@
-import {generateSortedArray} from './utils/array-utils';
+import {generateRange} from './utils/array-utils';
 import {binarySearch} from './binary-search';
 
 describe('Binary Search', () => {
-  const input: number[] = generateSortedArray(0, 5);
+  const input: number[] = generateRange(0, 5);
 
   test('should return true if array contains target', () => {
     expect(binarySearch(input, 0)).toBe(true);
