@@ -1,10 +1,10 @@
 # Computer Science Dojo
 
-A TypeScript repository aimed at teaching computer science concepts through test driven learning (TDL).
+A TypeScript project aimed at teaching computer science concepts through test driven learning (TDL).
 
 ## Usage
 
-The project uses a command line interface to delete function/method bodies and/or documentation from a file, leaving it up to the user to fill in the code required to get the tests to pass. To start the test-driven learning process, run the following:
+The project uses a command line interface to delete function/method bodies and/or documentation from a file, leaving it up to the user to fill in the code required to get the tests to pass. To start the test-driven learning process, clone the repository and run the following:
 
 ```
 npm install
@@ -12,7 +12,7 @@ npm install
 npm run practice
 ```
 
-This will start the CLI, where you can select the concept you want to learn and begin the test-driven learning process.
+This will install the required dependencies and start the CLI, where you can select the concept you want to learn and begin the test-driven learning process.
 
 ## Contributing
 
