@@ -5,9 +5,9 @@
  *
  * - select a 'pivot' element from the array to serve as a partition
  * - divide the remaining elements into groups:
- * 		- left: less than pivot
- * 		- center: equal to pivot (includes pivot itself)
- * 		- right: greater than pivot
+ * 	- left: less than pivot
+ * 	- center: equal to pivot (includes pivot itself)
+ * 	- right: greater than pivot
  * - apply quick sort to left and right groups
  * - return the merged result: [sortedLeft, center, sortedRight]
  *
